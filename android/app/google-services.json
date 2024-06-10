@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "14376386666",
+    "project_id": "ddetect-rcoem",
+    "storage_bucket": "ddetect-rcoem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14376386666:android:c9aebaa6c3edd74a894a13",
+        "android_client_info": {
+          "package_name": "com.application.ddetect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBU8UVQCVoFZaGxGfS99bqBjk1a75RKLHQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
