@@ -228,9 +228,11 @@ class _AddDetailsState extends State<AddDetails> {
   void insertData() async {
     if (userName.text.isEmpty ||
         dobController.text.isEmpty ||
-        selectedGender!.isEmpty) {
+        selectedGender == null) {
       Fluttertoast.showToast(msg: "Enter Data Please");
     } else {
+      _showProgressDialog();
+
       DocumentReference collectionRef =
           FirebaseFirestore.instance.collection("UserDetails").doc(user!.uid);
 
@@ -242,10 +244,43 @@ class _AddDetailsState extends State<AddDetails> {
 
       Fluttertoast.showToast(msg: "Item uploaded successfully.");
       addDetails();
+      Navigator.of(context).pop();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Splashscreen()),
       );
     }
+  }
+
+  void _showProgressDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 25.0,
+              horizontal: 16.0,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 50),
+                Text(
+                  'Uploading...',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

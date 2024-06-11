@@ -21,9 +21,10 @@ class _ReportPageState extends State<ReportPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(
-              color: Colors.blue,
-            ));
+              child: CircularProgressIndicator(
+                color: Colors.blue,
+              ),
+            );
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -34,8 +35,9 @@ class _ReportPageState extends State<ReportPage> {
               scrollDirection: Axis.vertical,
               child: Column(
                 children: items.map((item) {
+                  String docID = item['docID'];
                   return CustomCard4(
-                    docID: "",
+                    docID: docID,
                     userID: user!.uid,
                     assetUrl: item['Image'],
                     title: item['Name'],
@@ -57,8 +59,11 @@ class _ReportPageState extends State<ReportPage> {
         .collection("Reports")
         .where("Email", isEqualTo: email)
         .get();
-    return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
+
+    return querySnapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['docID'] = doc.id;
+      return data;
+    }).toList();
   }
 }

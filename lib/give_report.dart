@@ -33,7 +33,8 @@ class _ReportsPageState extends State<ReportsPage> {
       rID = widget.docID;
 
       email = "";
-      image = "";
+      image =
+          "https://plus.unsplash.com/premium_photo-1683865776032-07bf70b0add1?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
       values = "----------------";
     });
     fetchDataUser();
@@ -68,6 +69,7 @@ class _ReportsPageState extends State<ReportsPage> {
         rDate = snapshot['Date'];
         email = snapshot['Email'];
         values = snapshot['Values'];
+        image = snapshot["Image"];
       });
 
       getValuesInDouble(values!.substring(11));
@@ -270,7 +272,7 @@ class _ReportsPageState extends State<ReportsPage> {
                     ],
                     rows: [
                       DataRow(cells: [
-                        const DataCell(Text('BC Method')),
+                        const DataCell(Text('Nail Image Analysis')),
                         DataCell(Text(values!.substring(11))),
                       ]),
                     ],
@@ -351,6 +353,18 @@ class _ReportsPageState extends State<ReportsPage> {
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.network(
+                  image!,
+                  width: MediaQuery.of(context).size.width,
+                  // height: 100,
+                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(height: 150.0),

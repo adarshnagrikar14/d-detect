@@ -25,7 +25,6 @@ class _MyAccountState extends State<MyAccount> {
       ),
       body: Center(
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             const Gap(30.0),

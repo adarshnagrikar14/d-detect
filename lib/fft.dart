@@ -51,7 +51,6 @@ class _CalculateFFTState extends State<CalculateFFT> {
     final PermissionStatus cameraStatus2 = await Permission.photos.request();
 
     if (cameraStatus.isGranted && cameraStatus2.isGranted) {
-      // _pickAndCropImage();
     } else {
       showDialog(
         context: context,
@@ -84,6 +83,8 @@ class _CalculateFFTState extends State<CalculateFFT> {
       return;
     }
 
+    _showProgressDialog();
+
     setState(() {
       _isUploading = true;
     });
@@ -111,6 +112,8 @@ class _CalculateFFTState extends State<CalculateFFT> {
     urlVal = await downloadUrl.ref.getDownloadURL();
     if (urlVal!.isNotEmpty) {
       _checkFFT(urlVal!);
+    } else {
+      _hideProgressDialog();
     }
   }
 
@@ -479,6 +482,8 @@ class _CalculateFFTState extends State<CalculateFFT> {
       }
     } catch (e) {
       print('Error: $e');
+    } finally {
+      _hideProgressDialog();
     }
   }
 
@@ -494,6 +499,42 @@ class _CalculateFFTState extends State<CalculateFFT> {
     } else {
       return "";
     }
+  }
+
+  void _showProgressDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 25.0,
+              horizontal: 16.0,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 50),
+                Text(
+                  'Uploading...',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _hideProgressDialog() {
+    Navigator.of(context).pop();
   }
 
   void _uploadReport() async {
