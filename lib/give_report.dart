@@ -309,12 +309,21 @@ class _ReportsPageState extends State<ReportsPage> {
                       ),
                       DataColumn(
                         label: Text(
-                          '1.3 - 1.6',
+                          'Inference',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
-                    rows: const [],
+                    rows: const [
+                      DataRow(cells: [
+                        DataCell(Text('1.3 - 1.7')),
+                        DataCell(Text('Healthy')),
+                      ]),
+                      DataRow(cells: [
+                        DataCell(Text('1.8 and above')),
+                        DataCell(Text('Liver Disease')),
+                      ]),
+                    ],
                   ),
                 ),
               ),
