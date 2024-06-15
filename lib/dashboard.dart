@@ -47,7 +47,7 @@ class _MainDashboardState extends State<MainDashboard> {
 
   Future<void> _checkDetailsAdded() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool detailsAdded = prefs.getBool('detailsAdded') ?? false;
+    bool detailsAdded = prefs.getBool('detailsAdded2') ?? false;
 
     if (!detailsAdded) {
       Navigator.pushReplacement(

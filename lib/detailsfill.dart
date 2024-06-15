@@ -18,6 +18,8 @@ class _AddDetailsState extends State<AddDetails> {
   TextEditingController userName = TextEditingController();
   User? user = FirebaseAuth.instance.currentUser;
   TextEditingController dobController = TextEditingController();
+  TextEditingController mobileController = TextEditingController();
+
   String? selectedGender;
   List<String> genderOptions = ['Male', 'Female', 'Other'];
 
@@ -31,7 +33,9 @@ class _AddDetailsState extends State<AddDetails> {
 
   @override
   void dispose() {
+    userName.dispose();
     dobController.dispose();
+    mobileController.dispose();
     super.dispose();
   }
 
@@ -90,6 +94,40 @@ class _AddDetailsState extends State<AddDetails> {
                 decoration: InputDecoration(
                   labelText: "Name",
                   enabled: false,
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.blue,
+                      width: 1.2,
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(
+                top: 25.0,
+                left: 20.0,
+              ),
+              child: Text(
+                "Mobile Number",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17.0,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 18.0,
+                left: 18.0,
+                right: 18.0,
+              ),
+              child: TextField(
+                controller: mobileController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: "Mobile Number",
                   border: OutlineInputBorder(
                     borderSide: const BorderSide(
                       color: Colors.blue,
@@ -222,12 +260,13 @@ class _AddDetailsState extends State<AddDetails> {
 
   Future<void> addDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool("detailsAdded", true);
+    prefs.setBool("detailsAdded2", true);
   }
 
   void insertData() async {
     if (userName.text.isEmpty ||
         dobController.text.isEmpty ||
+        mobileController.text.isEmpty ||
         selectedGender == null) {
       Fluttertoast.showToast(msg: "Enter Data Please");
     } else {
@@ -240,6 +279,7 @@ class _AddDetailsState extends State<AddDetails> {
         'Name': userName.text,
         'DOB': dobController.text,
         'Gender': selectedGender,
+        "Mobile": mobileController.text,
       });
 
       Fluttertoast.showToast(msg: "Item uploaded successfully.");

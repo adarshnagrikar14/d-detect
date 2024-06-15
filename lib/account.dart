@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:ddetect/all_reports.dart";
 import "package:ddetect/splashscreen.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
@@ -16,6 +18,47 @@ class MyAccount extends StatefulWidget {
 class _MyAccountState extends State<MyAccount> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final User? user = FirebaseAuth.instance.currentUser;
+
+  late String _email;
+  late bool isVisible;
+  final List<String> emailList = [
+    "adarshnagrikar1404@gmail.com",
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      _email = user!.email!;
+      isVisible = false;
+    });
+    fetchTitles();
+  }
+
+  Future<void> fetchTitles() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection("Emails").get();
+      for (var doc in querySnapshot.docs) {
+        String title = doc['Email'];
+        emailList.add(title);
+      }
+
+      checkMail(_email, emailList);
+    } catch (e) {
+      //
+    }
+  }
+
+  void checkMail(String email, List<String> emailList) {
+    if (emailList.contains(email)) {
+      setState(() {
+        isVisible = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +102,32 @@ class _MyAccountState extends State<MyAccount> {
                 }
               },
             ),
+            const SizedBox(
+              height: 50.0,
+            ),
+            if (isVisible)
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Card(
+                  color: Colors.blue.shade50,
+                  child: MyListItem(
+                    title: "View Reports",
+                    subtitle: "View All Report uploaded",
+                    icon: Icons.document_scanner_rounded,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AllReportsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
             const Spacer(),
             Padding(
-              padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
               child: ElevatedButton(
                 onPressed: _signOut,
                 child: Container(
@@ -97,6 +163,46 @@ class _MyAccountState extends State<MyAccount> {
       context,
       MaterialPageRoute(
         builder: (context) => const Splashscreen(),
+      ),
+    );
+  }
+}
+
+class MyListItem extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  const MyListItem({
+    Key? key,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: InkWell(
+        onTap: onTap,
+        child: ListTile(
+          leading: Icon(
+            icon,
+            color: Colors.blue,
+          ),
+          title: Text(
+            title,
+          ),
+          subtitle: Text(
+            subtitle,
+          ),
+          trailing: const Icon(
+            Icons.arrow_forward_ios,
+          ),
+        ),
       ),
     );
   }

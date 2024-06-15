@@ -15,7 +15,7 @@ class ReportsPage extends StatefulWidget {
 }
 
 class _ReportsPageState extends State<ReportsPage> {
-  String? name, dob, gender, rDate, rID, age;
+  String? name, dob, gender, rDate, rID, age, mobile;
 
   String? email, image, values;
 
@@ -31,6 +31,7 @@ class _ReportsPageState extends State<ReportsPage> {
       rDate = "--------------";
       age = "";
       rID = widget.docID;
+      mobile = "";
 
       email = "";
       image =
@@ -52,6 +53,7 @@ class _ReportsPageState extends State<ReportsPage> {
         name = snapshot['Name'];
         dob = snapshot['DOB'];
         gender = snapshot['Gender'];
+        mobile = snapshot["Mobile"];
       });
 
       getAge(dob);
@@ -216,6 +218,15 @@ class _ReportsPageState extends State<ReportsPage> {
                           ),
                         ),
                         DataCell(Text(rID!)),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(
+                          Text(
+                            'Mobile',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataCell(Text(mobile!)),
                       ]),
                       DataRow(cells: [
                         const DataCell(
