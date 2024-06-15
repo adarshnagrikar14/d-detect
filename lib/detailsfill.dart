@@ -43,7 +43,7 @@ class _AddDetailsState extends State<AddDetails> {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(1970),
+      firstDate: DateTime(1940),
       lastDate: DateTime.now(),
     );
     if (picked != null) {

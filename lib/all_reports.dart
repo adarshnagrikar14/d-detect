@@ -48,7 +48,7 @@ class _AllReportsPageState extends State<AllReportsPage> {
                   String docID = item['docID'];
                   return CustomCard4(
                     docID: docID,
-                    userID: user!.uid,
+                    userID: item["UserID"],
                     assetUrl: item['Image'],
                     title: item['Name'],
                     description: item["Values"],

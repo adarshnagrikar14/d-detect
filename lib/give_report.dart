@@ -85,11 +85,11 @@ class _ReportsPageState extends State<ReportsPage> {
     if (result > 1.8) {
       setState(() {
         inference =
-            "The nail analysis result for the patient is $result, which is above the reference range. This indicates that you are likely suffering liver disease and need to consult a doctor immediately.";
+            "The nail analysis result for the person is $result, which is above the reference range. This indicates that you are likely suffering liver disease and need to consult a doctor immediately.";
       });
     } else {
       inference =
-          "The nail analysis result for the patient is $result, which falls within normal range. This indicates that the person is not suffering from any disease.";
+          "The nail analysis result for the person is $result, which falls within normal range. This indicates that the person is not suffering from any disease.";
     }
   }
 
@@ -124,7 +124,7 @@ class _ReportsPageState extends State<ReportsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Patient Report",
+          "person Report",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -162,7 +162,7 @@ class _ReportsPageState extends State<ReportsPage> {
                     columns: const [
                       DataColumn(
                         label: Text(
-                          'Patient',
+                          'Person',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
