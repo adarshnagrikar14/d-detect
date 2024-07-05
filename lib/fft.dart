@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print
+// ignore_for_file: use_build_context_synchronously, avoid_print, unused_element
 
 import 'dart:convert';
 import 'dart:io';
@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ddetect/give_report.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,6 +14,9 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:tflite_flutter/tflite_flutter.dart';
+// ignore: depend_on_referenced_packages
+import 'package:image/image.dart' as img;
 
 class CalculateFFT extends StatefulWidget {
   const CalculateFFT({super.key});
@@ -25,25 +28,76 @@ class CalculateFFT extends StatefulWidget {
 class _CalculateFFTState extends State<CalculateFFT> {
   late File? _pickedImage;
   final ImagePicker _imagePicker = ImagePicker();
-
   String? docIDReport;
-
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-
+  // final FirebaseStorage _storage = FirebaseStorage.instance;
   late String fftValue;
-
   late bool isVisible;
-
-  double _uploadProgress = 0.0;
+  final double _uploadProgress = 0.0;
   bool _isUploading = false;
+
+  Interpreter? _interpreter;
+  // ignore: prefer_typing_uninitialized_variables
+  List<dynamic>? _output;
 
   @override
   void initState() {
     super.initState();
+    _loadModel();
     _pickedImage = null;
     isVisible = false;
-
     fftValue = "";
+  }
+
+  Future<void> _loadModel() async {
+    _interpreter = await Interpreter.fromAsset('model.tflite');
+  }
+
+  Future<void> _uploadImage() async {
+    print(_pickedImage);
+    if (_pickedImage == null) {
+      return;
+    }
+
+    _showProgressDialog();
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    File? imageFile = File(_pickedImage!.path);
+    img.Image image = img.decodeImage(imageFile.readAsBytesSync())!;
+    img.Image resizedImage = img.copyResize(image, height: 299, width: 299);
+
+    var input = imageToByteListFloat32(resizedImage, 299);
+
+    var output = List.filled(3, 0).reshape([1, 3]);
+
+    _interpreter!.run(input, output);
+
+    setState(() {
+      _output = output;
+      _isUploading = false;
+      fftValue = _output.toString();
+    });
+
+    _uploadReport();
+    print(fftValue);
+    Navigator.of(context).pop();
+  }
+
+  Uint8List imageToByteListFloat32(img.Image image, int inputSize) {
+    var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
+    var buffer = Float32List.view(convertedBytes.buffer);
+    int pixelIndex = 0;
+    for (var i = 0; i < inputSize; i++) {
+      for (var j = 0; j < inputSize; j++) {
+        var pixel = image.getPixel(j, i);
+        buffer[pixelIndex++] = (img.getRed(pixel) / 127.5) - 1.0;
+        buffer[pixelIndex++] = (img.getGreen(pixel) / 127.5) - 1.0;
+        buffer[pixelIndex++] = (img.getBlue(pixel) / 127.5) - 1.0;
+      }
+    }
+    return convertedBytes.buffer.asUint8List();
   }
 
   Future<void> requestPermissions() async {
@@ -78,44 +132,44 @@ class _CalculateFFTState extends State<CalculateFFT> {
 
   User? user = FirebaseAuth.instance.currentUser;
 
-  Future<void> _uploadImage() async {
-    if (_pickedImage == null) {
-      return;
-    }
+  // Future<void> _uploadImage() async {
+  //   if (_pickedImage == null) {
+  //     return;
+  //   }
 
-    _showProgressDialog();
+  //   _showProgressDialog();
 
-    setState(() {
-      _isUploading = true;
-    });
+  //   setState(() {
+  //     _isUploading = true;
+  //   });
 
-    File? image = File(_pickedImage!.path);
-    String fileName = image.path.split('/').last;
+  //   File? image = File(_pickedImage!.path);
+  //   String fileName = image.path.split('/').last;
 
-    final Reference storageRef = _storage.ref().child('images/$fileName.jpg');
-    final UploadTask uploadTask = storageRef.putFile(File(_pickedImage!.path));
+  //   final Reference storageRef = _storage.ref().child('images/$fileName.jpg');
+  //   final UploadTask uploadTask = storageRef.putFile(File(_pickedImage!.path));
 
-    uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-      setState(() {
-        _uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes);
-      });
-    }, onError: (Object e) {
-      print('Error: $e');
-    });
+  //   uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+  //     setState(() {
+  //       _uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes);
+  //     });
+  //   }, onError: (Object e) {
+  //     print('Error: $e');
+  //   });
 
-    final TaskSnapshot downloadUrl = (await uploadTask.whenComplete(() {
-      setState(() {
-        _isUploading = false;
-      });
-    }));
+  //   final TaskSnapshot downloadUrl = (await uploadTask.whenComplete(() {
+  //     setState(() {
+  //       _isUploading = false;
+  //     });
+  //   }));
 
-    urlVal = await downloadUrl.ref.getDownloadURL();
-    if (urlVal!.isNotEmpty) {
-      _checkFFT(urlVal!);
-    } else {
-      _hideProgressDialog();
-    }
-  }
+  //   urlVal = await downloadUrl.ref.getDownloadURL();
+  //   if (urlVal!.isNotEmpty) {
+  //     _checkFFT(urlVal!);
+  //   } else {
+  //     _hideProgressDialog();
+  //   }
+  // }
 
   Future<void> _pickAndCropImage(ImageSource imageSource) async {
     await requestPermissions();
@@ -159,6 +213,8 @@ class _CalculateFFTState extends State<CalculateFFT> {
         _pickedImage = File(croppedFile.path);
         isVisible = true;
       });
+
+      print(_pickedImage);
     } catch (e) {
       if (kDebugMode) {
         print('Error during image cropping: $e');
@@ -538,7 +594,7 @@ class _CalculateFFTState extends State<CalculateFFT> {
   }
 
   void _uploadReport() async {
-    String imageUrl = urlVal!;
+    String imageUrl = "";
     String userName = user!.displayName!;
     String userMail = user!.email!;
     String userValues = fftValue;
